@@ -1,16 +1,11 @@
 #include <Servo.h>                           // Include servo library
 
-/*
-  White            Black
-  4:1800      ||  24000
-
-  5:1000      ||  11800
-
-  6:2000      ||  29600
-*/
 
 // QTI Threshold
-long t = 200;
+long t = 500;
+
+// Pause variable
+bool pausedForBlack = false;
 
 // Declare left and right servos
 Servo servoLeft;
@@ -25,48 +20,63 @@ void setup() {
 
 void loop() {
   long qti4 = rcTime(4);
- long qti5 = rcTime(5);
+  long qti5 = rcTime(5);
   long qti6 = rcTime(6);
 
-  print3vals(qti4,qti5,qti6);
+  print3vals(qti4, qti5, qti6);
 
   //if (qti5 > t) { // If center qti on black, start movement
-   if (qti4 < t && qti6 < t) { // If side qtis are on white, move forward
-      servoLeft.writeMicroseconds(1700);
-      servoRight.writeMicroseconds(1300);
+  if (qti4 < t && qti6 < t) { // If side qtis are on white, move forward
+    servoLeft.writeMicroseconds(1550);
+    servoRight.writeMicroseconds(1450);
+  }
+  if (qti4 > t && qti6 < t) { // If 4 (right) sees white and 6 (left) sees black, turn left
+    servoLeft.writeMicroseconds(1650);
+    servoRight.writeMicroseconds(1550);
+  }
+  if (qti4 < t && qti6 > t) { // If 4 (right) sees black and 6 (left) sees white, turn right
+    servoLeft.writeMicroseconds(1450);
+    servoRight.writeMicroseconds(1350);
+  }
+  if (qti4 > t && qti6 > t) { // If both see black, stop, wait 100 milliseconds, then proceed forward
+    if (!pausedForBlack) {
+      servoLeft.writeMicroseconds(1500);
+      servoRight.writeMicroseconds(1500\);
+      delay(200);
+      pausedForBlack = true;
     }
-     if (qti4 > t && qti6 < t) { // If 4 (right) sees white and 6 (left) sees black, turn left
-      servoLeft.writeMicroseconds(1700);
-      servoRight.writeMicroseconds(1700);
+    else {
+      servoLeft.writeMicroseconds(1550);
+      servoRight.writeMicroseconds(1450);
     }
-     if (qti4 < t && qti5 > t) { // If 4 (right) sees black and 6 (left) sees white, turn right
-      servoLeft.writeMicroseconds(1300);
-      servoRight.writeMicroseconds(1300);
-    }
+  }
+  else {
+    pausedForBlack = false;
+  }
   //}
 }
 
 long rcTime(int pin) {
   /*(pinMode(pin, OUTPUT);
+    digitalWrite(pin, HIGH);
+    delayMicroseconds(230);
+    pinMode(pin, INPUT);
+    digitalWrite(pin, LOW);
+    long time = micros();
+    while (digitalRead(pin)) {
+    time = micros() - time;
+    }
+    return time;*/
+
+  pinMode(pin, OUTPUT);
   digitalWrite(pin, HIGH);
   delayMicroseconds(230);
   pinMode(pin, INPUT);
   digitalWrite(pin, LOW);
   long time = micros();
-  while (digitalRead(pin)) {
-    time = micros() - time;
-  }
-  return time;*/
-
- pinMode(pin, OUTPUT);
- digitalWrite(pin,HIGH);
- delayMicroseconds(230);
- pinMode(pin, INPUT);
- digitalWrite(pin, LOW);
- long time = micros();
- while (digitalRead(pin));
- time = micros() - time;
- return time;
+  while (digitalRead(pin));
+  time = micros() - time;
+  return time;
 
 }
 
