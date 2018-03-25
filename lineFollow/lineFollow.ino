@@ -41,7 +41,7 @@ void loop() {
   if (qti4 > t && qti6 > t) { // If both see black, stop, wait 100 milliseconds, then proceed forward
     if (!pausedForBlack) {
       servoLeft.writeMicroseconds(1500);
-      servoRight.writeMicroseconds(1500\);
+      servoRight.writeMicroseconds(1500);
       delay(200);
       pausedForBlack = true;
     }
