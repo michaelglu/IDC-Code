@@ -110,13 +110,13 @@ void lineFollow(long qtiRight, long qtiMiddle, long qtiLeft)
 
     stopMotors();
     delay(200);
-    pausedForBlack = true;
+    //pausedForBlack = true;
     lineFollowB = false;
     getCourtB = true;
 
   }
   else {
-    pausedForBlack = false;
+    //pausedForBlack = false;
   }
   //}
 }
