@@ -16,17 +16,17 @@ void loop() {
   //qti1=rcTime(4);
   qti2 = rcTime(5);
   //qti3=rcTime(6);
-  //print3vals(qti1,qti2,qti3);
+  print3vals(qti1,qti2,qti3);
 
-  if (qti2 < 27)
+  if (qti2 < 18)
   {
     Serial.println("GREY");
   }
-  else if (27 <= qti2 && qti2 < 500)
+  else if (18 <= qti2 && qti2 < 200)
   {
     Serial.println("WHITE");
   }
-  else if (500 <= qti2)
+  else if (200 <= qti2)
   {
     Serial.println("BLACK");
   }
