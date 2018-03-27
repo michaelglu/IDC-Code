@@ -48,7 +48,6 @@ void loop() {
   else if (getCourtB)
   {
     int courtType = getCourt();
-    //getCourt();
   }
   //Each boolean correspons to the task in progress, once the task is done the boolean
   //is switched to false and the subsequent boolesn is switched to true
@@ -132,7 +131,7 @@ int getCourt()
   delay(2500);
   stopMotors();
 
-  
+
 
   getCourtB = false;
   return 0;
