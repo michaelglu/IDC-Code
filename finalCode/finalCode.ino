@@ -2,61 +2,76 @@
 #define Tx 14
 #include <Servo.h>
 
+// QTI pins
+const int rightQTIPin = 4;
+const int middleQTIPin = 8;
+const int leftQTIPin = 6;
+
+const int commLedPin = 9;
+
 // QTI Threshold
 long t = 500;
+long greyC = 2000;
+long blackC = 5000;
 
 // Pause variable
 //bool pausedForBlack = false;
 
 // Booleans for order of operations
-bool lineFollowB, getCourtB, sendValsB, danceB, singB, lightShowB;
+bool lineFollowB, getCourtB, sendCourtB;
+
+int courtType = -1;
+int score = 0;
 
 // Declare left and right servos
 Servo servoLeft;
 Servo servoRight;
 
 void setup() {
-  // Servo Setup
+  // Servo setup
   servoLeft.attach(13);
   servoRight.attach(12);
 
-  // QTI Setup
-  pinMode(4, INPUT);
-  pinMode(5, INPUT);
-  pinMode(6, INPUT);
+  // QTI setup
+  pinMode(rightQTIPin, INPUT);
+  pinMode(middleQTIPin, INPUT);
+  pinMode(leftQTIPin, INPUT);
 
-  // Serial Setup
+  // Communication LED setup
+  pinMode(commLedPin, OUTPUT);
+
+  // Serial setup
   Serial.begin(9600);
   Serial3.begin(9600);
 
-  // Booleans for order of operations
-  lineFollowB = true;
-  getCourtB = false;
-  sendValsB = false;
-  danceB = false;
-  singB = false;
-  lightShowB = false;
-
   delay(500);
+
+  // Start off with line following
+  lineFollowB = true;
 }
 
 void loop() {
+  // Each boolean correspons to the task in progress, once the task is done the boolean
+  // is switched to false and the subsequent boolesn is switched to true
+
   if (lineFollowB)
   {
-    lineFollow(rcTime(4), rcTime(5), rcTime(6));
+    lineFollow(rcTime(rightQTIPin), rcTime(middleQTIPin), rcTime(leftQTIPin));
   }
-  else if (getCourtB)
+  if (getCourtB)
   {
-    int courtType = getCourt();
+    courtType = getCourt();
   }
-  //Each boolean correspons to the task in progress, once the task is done the boolean
-  //is switched to false and the subsequent boolesn is switched to true
+  else if (sendCourtB) {
+    sendCourt(courtType);
+  }
 }
 
-//______________________________________________
-//HELPER FUNCTIONS
-//______________________________________________
-//QTI HELPERS
+// ---------------------------------------------
+// HELPER FUNCTIONS
+// ---------------------------------------------
+
+// QTI rctime
 long rcTime(int pin) {
 
   pinMode(pin, OUTPUT);
@@ -70,8 +85,9 @@ long rcTime(int pin) {
   return time;
 
 }
-//________________________________________________
-//SERVO HELPERS
+
+// ---------------------------------------------
+// Movement
 void goForward()
 {
   servoLeft.writeMicroseconds(1550);
@@ -92,8 +108,9 @@ void stopMotors()
   servoLeft.writeMicroseconds(1500);
   servoRight.writeMicroseconds(1500);
 }
-//________________________________________________
-//LINE FOLLOW
+
+// ---------------------------------------------
+// Line following
 void lineFollow(long qtiRight, long qtiMiddle, long qtiLeft)
 {
   //if (qtiMiddle > t) { // If center qti on black, start movement
@@ -120,24 +137,88 @@ void lineFollow(long qtiRight, long qtiMiddle, long qtiLeft)
   }
   //}
 }
-//________________________________________________
-//Get Court Type
+
+// ---------------------------------------------
+// Get Court Type
 int getCourt()
 {
   // Turn left 90 degrees in place
   goLeft();
   delay(900);
   goForward();
-  delay(2500);
+  delay(2000);
   stopMotors();
 
+  // Take 10 readings of court from middle QTI
+  int numberOfReadings = 10;
+  int readings[numberOfReadings];
+  for (int i = 0; i < numberOfReadings; i++)
+  {
+    long reading = rcTime(middleQTIPin);
+    Serial.println(reading);
+    if (reading < greyC)
+    {
+      Serial.println("WHITE");
+      readings[i] = 0;
+    }
+    else if (greyC <= reading && reading < blackC)
+    {
+      Serial.println("GREY");
+      readings[i] = 1;
+    }
+    else if (blackC <= reading)
+    {
+      Serial.println("BLACK");
+      readings[i] = 2;
+    }
+    goRight();
+    delay(20);
+    stopMotors();
+    delay(20);
+  }
 
+  // Return the average of the 10 readings
+  int sum = 0;
+  for (int i = 0; i < numberOfReadings; i++)
+  {
+    sum = sum + readings[i];
+  }
+  Serial.print("Sum: ");
+  Serial.println(sum);
+  int ave = sum / numberOfReadings;
+  Serial.print("Ave: ");
+  Serial.println(ave);
 
   getCourtB = false;
-  return 0;
+  sendCourtB = true;
+  return ave;
 }
-//________________________________________________
-//DEBUG VIA SERIAL
+
+// -----------------------------------------------
+// Send value of court and flash communication LED
+void sendCourt(int val)
+{
+  if (val == 0) // White
+  {
+    digitalWrite(commLedPin, HIGH);
+  }
+  else if (val == 1) { // Grey
+    digitalWrite(commLedPin, HIGH);
+    delay(50);
+    digitalWrite(commLedPin, LOW);
+    delay(50);
+  }
+  else if (val == 2) { // Black
+    digitalWrite(commLedPin, HIGH);
+    delay(300);
+    digitalWrite(commLedPin, LOW);
+    delay(300);
+  }
+  Serial3.print(val);
+}
+
+// -----------------------------------------------
+// Debug via serial
 void print3vals(long val1, long val2, long val3) {
   Serial.print(val1);
   Serial.print(" | ");
@@ -146,4 +227,3 @@ void print3vals(long val1, long val2, long val3) {
   Serial.println(val3);
   Serial.println("________________");
 }
-//________________________________________________
