@@ -57,16 +57,7 @@ void loop() {
 }
 
 long rcTime(int pin) {
-  /*(pinMode(pin, OUTPUT);
-    digitalWrite(pin, HIGH);
-    delayMicroseconds(230);
-    pinMode(pin, INPUT);
-    digitalWrite(pin, LOW);
-    long time = micros();
-    while (digitalRead(pin)) {
-    time = micros() - time;
-    }
-    return time;*/
+  
 
   pinMode(pin, OUTPUT);
   digitalWrite(pin, HIGH);
