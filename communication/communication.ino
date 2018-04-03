@@ -1,21 +1,18 @@
-// Samuel Rabinowitz
+// Samuel Rabinowitz 4/3/2018
 #define Rx 15
 #define Tx 14
 
-// -------------------
-// COPY THIS FOR COMMUNICATION
-// -------------------
-const int DIVING = 0;
-const int WEIGHTLIFTING = 1;
-const int CYCLING = 2;
-const int BASKETBALL = 3;
-const int COURT_SPORTS = 4;
+const int DIVING = 0; // DIVING: a, b, and c
+const int WEIGHTLIFTING = 1; // WEIGHTLIFTING: d, e, and f
+const int CYCLING = 2; // CYCLING: g, h, i
+const int BASKETBALL = 3; // BASKETBALL: j, k, l
+const int COURT_SPORTS = 4; // COURT_SPORTS: m, n, o
+const String letters = "abcdefghijklmno";
 
 int myTeam = COURT_SPORTS; // PUT YOUR TEAM HERE!!!
-int myScore = -1;
-int received[5] = { -1, -1, -1, -1, -1};
+int myScore = 0; // SET THIS TO YOUR SCORE OF 0, 1, OR 2!!!
+int received[5] = { -1, -1, -1, -1, -1 };
 int finalScore = -1;
-// -------------------
 
 void setup() {
   // Serial setup
@@ -26,85 +23,43 @@ void setup() {
 }
 
 void loop() {
+  // Set own score in received
+  received[myTeam] = myScore;
+
+  // Communicate until all scores are in and calculated
   while (finalScore == -1) {
-    finalScore = communication(myScore);
+    finalScore = communication();
   }
 
+  Serial.println(finalScore);
+
+  // Final action - PUT YOUR ACTIONS UNDER HERE
   switch (finalScore) {
     case 0:
       // Bronze - coordinated dance
       break;
     case 1:
-    
+      // Silver - light show
+      break;
+    case 2:
+      // Gold - sing national anthem
+      break;
   }
 }
 
 // Returns answer if done, or -1 if not done yet
-int communication(int myScore) {
+int communication() {
   // Sending
-
-
+  Serial3.print(letters.charAt(myTeam * 3 + myScore));
 
   // Receiving
-  if (Serial3.available()) {
+  int maxReceives = 10;
+  int receives = 0;
+  while (Serial3.available() && receives++ < maxReceives) {
     char incoming = Serial3.read();
 
-    switch (incoming) {
-      // DIVING: a, b, and c
-      case 'a':
-        received[DIVING] = 0;
-        break;
-      case 'b':
-        received[DIVING] = 1;
-        break;
-      case 'c':
-        received[DIVING] = 2;
-        break;
-
-      // WEIGHTLIFTING: d, e, and f
-      case 'd':
-        received[WEIGHTLIFTING] = 0;
-        break;
-      case 'e':
-        received[WEIGHTLIFTING] = 1;
-        break;
-      case 'f':
-        received[WEIGHTLIFTING] = 2;
-        break;
-
-      // CYCLING: g, h, i
-      case 'g':
-        received[CYCLING] = 0;
-        break;
-      case 'h':
-        received[CYCLING] = 1;
-        break;
-      case 'i':
-        received[CYCLING] = 2;
-        break;
-
-      // BASKETBALL: j, k, l
-      case 'j':
-        received[BASKETBALL] = 0;
-        break;
-      case 'k':
-        received[BASKETBALL] = 1;
-        break;
-      case 'l':
-        received[BASKETBALL] = 2;
-        break;
-
-      // COURT_SPORTS: m, n, o
-      case 'm':
-        received[COURT_SPORTS] = 0;
-        break;
-      case 'n':
-        received[COURT_SPORTS] = 1;
-        break;
-      case 'o':
-        received[COURT_SPORTS] = 2;
-        break;
-    }
+    int incomingPos = letters.indexOf(incoming);
+    received[(int) (incomingPos / 3)] = incomingPos % 3;
   }
 
   // Check to see if done
@@ -119,4 +74,3 @@ int communication(int myScore) {
   // Done, so return mod 3 of the results
   return sum % 3;
 }
-
