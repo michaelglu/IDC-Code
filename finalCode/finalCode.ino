@@ -8,6 +8,7 @@ const int middleQTIPin = 8;
 const int leftQTIPin = 6;
 
 const int commLedPin = 9;
+const int recLedPin = 11;
 
 // QTI Threshold
 long t = 500;
@@ -40,6 +41,9 @@ void setup() {
   // Communication LED setup
   pinMode(commLedPin, OUTPUT);
 
+  // Receiving LED setup
+  pinMode(recLedPin, OUTPUT);
+
   // Serial setup
   Serial.begin(9600);
   Serial3.begin(9600);
@@ -64,6 +68,7 @@ void loop() {
   }
   else if (sendCourtB) {
     sendCourt(courtType);
+    receive();
   }
 }
 
@@ -215,6 +220,20 @@ void sendCourt(int val)
     delay(300);
   }
   Serial3.print(val);
+}
+
+// -----------------------------------------------
+// Receive communication
+void receive() {
+  if (Serial3.available()) { // receiving
+    digitalWrite(11, HIGH);
+
+    char incoming = Serial3.read();
+    Serial.println(incoming);
+  }
+  else {
+    digitalWrite(11, LOW);
+  }
 }
 
 // -----------------------------------------------
