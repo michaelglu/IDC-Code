@@ -2,6 +2,9 @@
 #define Rx 15
 #define Tx 14
 
+// -----------------
+// COPY FROM HERE...
+// -----------------
 const int DIVING = 0; // DIVING: a, b, and c
 const int WEIGHTLIFTING = 1; // WEIGHTLIFTING: d, e, and f
 const int CYCLING = 2; // CYCLING: g, h, i
@@ -10,9 +13,12 @@ const int COURT_SPORTS = 4; // COURT_SPORTS: m, n, o
 const String letters = "abcdefghijklmno";
 
 int myTeam = COURT_SPORTS; // PUT YOUR TEAM HERE!!!
-int myScore = 0; // SET THIS TO YOUR SCORE OF 0, 1, OR 2!!!
+int myScore = -1; // SET THIS TO YOUR SCORE OF 0, 1, OR 2 BASED ON SENSING!!!
 int received[5] = { -1, -1, -1, -1, -1 };
 int finalScore = -1;
+// -----------------
+// ...TO HERE
+// -----------------
 
 void setup() {
   // Serial setup
@@ -23,6 +29,9 @@ void setup() {
 }
 
 void loop() {
+  // -----------------
+  // COPY FROM HERE...
+  // -----------------
   // Set own score in received
   received[myTeam] = myScore;
 
@@ -45,8 +54,14 @@ void loop() {
       // Gold - sing national anthem
       break;
   }
+  // -----------------
+  // ...TO HERE
+  // -----------------
 }
 
+// -----------------
+// COPY FROM HERE...
+// -----------------
 // Returns answer if done, or -1 if not done yet
 int communication() {
   // Sending
@@ -74,3 +89,6 @@ int communication() {
   // Done, so return mod 3 of the results
   return sum % 3;
 }
+// -----------------
+// ...TO HERE
+// -----------------
