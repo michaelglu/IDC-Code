@@ -139,6 +139,7 @@ void loop() {
 // HELPER FUNCTIONS
 // ---------------------------------------------
 
+// ---------------------------------------------
 // QTI rctime
 long rcTime(int pin) {
 
@@ -211,8 +212,9 @@ void lineFollow(long qtiRight, long qtiMiddle, long qtiLeft)
 int getCourt()
 {
   // Turn left 90 degrees in place
-  goLeft();
-  delay(900);
+  servoLeft.writeMicroseconds(1450);
+  servoRight.writeMicroseconds(1450);
+  delay(1050);
   goForward();
   delay(2000);
   stopMotors();
