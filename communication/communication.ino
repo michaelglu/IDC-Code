@@ -66,6 +66,7 @@ void loop() {
 int communication() {
   // Sending
   Serial3.print(letters.charAt(myTeam * 3 + myScore));
+  delay(1000);
 
   // Receiving
   int maxReceives = 10;
@@ -84,6 +85,12 @@ int communication() {
       return -1;
     }
     sum += received[i];
+  }
+
+  // Send out a final 3-second blast before starting
+  for (int i = 0; i < 10; i++) {
+    Serial3.print(letters.charAt(myTeam * 3 + myScore));
+    delay(300);
   }
 
   // Done, so return mod 3 of the results
