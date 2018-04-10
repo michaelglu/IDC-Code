@@ -34,12 +34,12 @@ int received[5] = { -1, -1, -1, -1, -1 };
 int finalScore = -1;
 
 // Lightshow
-int greenpin = 9;
-int redpin = 10;
-int yellowpin = 4;
+int greenpin = 10;
+int redpin = 11;
+int yellowpin = 9;
 
 // National Anthem
-int piezoPin = 9;
+int piezoPin = 7;
 #include "pitches.h"
 int melodyBass[] = {
   G2, F2, E2, F2, G2, A2, B2, C3, D3,
@@ -309,6 +309,12 @@ int communication() {
       return -1;
     }
     sum += received[i];
+  }
+
+  // Send out a final 3-second blast before starting
+  for (int i = 0; i < 10; i++) {
+    Serial3.print(letters.charAt(myTeam * 3 + myScore));
+    delay(300);
   }
 
   // Done, so return mod 3 of the results
